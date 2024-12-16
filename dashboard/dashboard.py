@@ -4,12 +4,12 @@ import streamlit as st
 import pandas as pd
 import json
 
-# Redis Configuration
+
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
 
-# Streamlit Configuration
+
 st.set_page_config(
     page_title="Portugal Real Estate Dashboard",
     page_icon="🏠",
@@ -18,7 +18,7 @@ st.set_page_config(
 
 st.title("🏠 **Portugal Real Estate Dashboard**")
 
-# Cache data fetching
+
 @st.cache_data(ttl=30)
 def get_global_metrics(_redis_conn):
     raw_data = _redis_conn.get("global_metrics")
@@ -37,11 +37,11 @@ def get_grouped_data(_redis_conn):
                 data.append({**{"Key": key.decode("utf-8")}, **json.loads(record)})
     return data
 
-# Fetching data
+
 global_metrics = get_global_metrics(r)
 grouped_data = get_grouped_data(r)
 
-# Display global metrics
+
 if global_metrics:
     st.subheader("📊 **Global Metrics**")
     col1, col2, col3, col4 = st.columns(4)
@@ -57,17 +57,17 @@ if global_metrics:
 else:
     st.warning("⚠️ No global metrics available.")
 
-# Process grouped data
+
 if grouped_data:
     df = pd.DataFrame(grouped_data)
     df["PropertyType"], df["District"] = zip(*df["Key"].str.split(":"))
     df.drop(columns=["Key"], inplace=True)
 
-    # Add filter section
+
     st.subheader("🔍 **Filter Options**")
     col1, col2 = st.columns(2)
 
-    # Dropdown checklist for property types
+    
     with col1:
         selected_property_types = st.multiselect(
             "🏘️ Select Property Types",
@@ -75,7 +75,7 @@ if grouped_data:
             default=df["PropertyType"].unique()
         )
 
-    # Dropdown checklist for districts
+    
     with col2:
         selected_districts = st.multiselect(
             "📍 Select Districts",
@@ -83,13 +83,13 @@ if grouped_data:
             default=df["District"].unique()
         )
 
-    # Apply filters
+    
     filtered_df = df[
         (df["PropertyType"].isin(selected_property_types)) &
         (df["District"].isin(selected_districts))
     ]
 
-    # Display filtered data
+    
     st.subheader("📋 **Detailed Data View**")
     st.dataframe(
         filtered_df.style.format({

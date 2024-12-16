@@ -6,7 +6,7 @@ import redis
 import logging
 import json
 
-# Конфигурация
+
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 INPUT_TOPIC = os.environ.get("INPUT_TOPIC", "input_topic")
 REDIS_HOST = os.environ.get("REDIS_HOST", "redis")
